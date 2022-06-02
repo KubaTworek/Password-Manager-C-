@@ -1,5 +1,10 @@
 Nazwa: Google
 Haslo: qwerty
+Kategoria: socialMedia
+StronaWWW/Serwis: brak
+Login: brak
+Nazwa: Apple
+Haslo: qwerty
 Kategoria: konto
 StronaWWW/Serwis: brak
 Login: brak

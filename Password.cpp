@@ -5,11 +5,8 @@
 #include "Password.h"
 
 
-Password::Password(std::string &name, std::string &passwordText, std::string &category) : name(name), passwordText(passwordText), category(category) {this->service = "brak"; this->login="brak";}
+Password::Password(std::string &name, std::string &passwordText, std::string &category) : name(name), passwordText(passwordText), category(category) {}
 
-Password::Password(std::string &name, std::string &passwordText, std::string &category, std::string &service) : name(name), passwordText(passwordText), category(category), service(service) {this->login="brak";}
-
-Password::Password(std::string &name, std::string &passwordText, std::string &category, std::string &service, std::string &login) : name(name), passwordText(passwordText), category(category), service(service), login(login) {}
 
 const std::string &Password::getName() const {
     return name;

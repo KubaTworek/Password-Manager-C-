@@ -16,9 +16,6 @@ class Password {
 
 public:
     Password(std::string &name, std::string &passwordText, std::string &category);
-    Password(std::string &name, std::string &passwordText, std::string &category, std::string &service);
-    Password(std::string &name, std::string &passwordText, std::string &category, std::string &service,
-             std::string &login);
 
     //GETTERS
 
