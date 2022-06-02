@@ -1,0 +1,5 @@
+Nazwa: Google
+Haslo: qwerty
+Kategoria: konto
+StronaWWW/Serwis: brak
+Login: brak
