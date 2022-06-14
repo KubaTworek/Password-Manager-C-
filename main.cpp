@@ -4,6 +4,8 @@
 #include "Password.h"
 #include<algorithm>
 
+std::string path;
+
 bool sortName (Password a,Password b) { return (a.getName()<b.getName()); }
 bool sortCategory (Password a,Password b) { return (a.getCategory()<b.getCategory()); }
 bool sortNameAndCategory (Password a,Password b) {
@@ -13,6 +15,10 @@ bool sortNameAndCategory (Password a,Password b) {
         return (a.getCategory()<b.getCategory());
     }
 }
+
+void odczytCategories(std::vector<std::string> &vector);
+
+void saveCategories(std::vector<std::string> &vector);
 
 void choosingFile(std::vector<Password> &vector);
 
@@ -34,13 +40,38 @@ void writeOutCategories(std::vector<std::string> &vector);
 
 void sortPasswords(std::vector<Password> &vector);
 
+void savePasswords(std::vector<Password> &vector);
+
 int main() {
     std::vector<Password> passwords;
-    std::vector<std::string> categories{"socialMedia","konto"};
+    std::vector<std::string> categories;
+    odczytCategories(categories);
     choosingFile(passwords);
     passwordManagement(passwords,categories);
 
     return 0;
+}
+
+void odczytCategories(std::vector<std::string> &vector){
+    std::ifstream Wodczyt;
+    std::string wiersz;
+    Wodczyt.open("../categories.txt");
+    while (!Wodczyt.eof()) {
+        std::string category;
+        Wodczyt >> category;
+        vector.push_back(category);
+    }
+    Wodczyt.close();
+}
+
+void saveCategories(std::vector<std::string> &vector){
+    std::string str = "";
+    std::ofstream zapis("../categories.txt");
+    for (std::string category : vector) {
+        str += "\n" + category;
+    }
+    zapis<<str;
+    zapis.close();
 }
 
 void choosingFile(std::vector<Password> &vector) {
@@ -48,34 +79,49 @@ void choosingFile(std::vector<Password> &vector) {
 
     std::cout << "Wybierz opcje." << std::endl;
     std::cout << "1. Podaj sciezke do pliku." << std::endl;
-    std::cout << "2. Wybierz plik." << std::endl;
+    std::cout << "2. Wybierz plik standardowy." << std::endl;
     std::cout << "0. Zakoncz." << std::endl;
 
     int choose;
-    std::string absolutePath;
 
     std::cin >> choose;
 
         switch (choose) {
             case 1: {
+                std::string &absolutePath = path;
                 std::cout << "Podaj sciezke absolutna: " << std::endl;
                 std::cin >> absolutePath;
-                std::ifstream Wodczyt;
-                std::string wiersz;
-                Wodczyt.open(absolutePath);
-                while (!Wodczyt.eof()) {
+                std::ifstream Wodczyt1;
+                std::string wiersz1;
+                Wodczyt1.open(absolutePath);
+                while (!Wodczyt1.eof()) {
                     std::string a, name, c, passwordText, e, category, g, service, i, login;
-                    Wodczyt >> a >> name >> c >> passwordText >> e >> category >> g >> service >> i >> login;
+                    Wodczyt1 >> a >> name >> c >> passwordText >> e >> category >> g >> service >> i >> login;
                     Password password(name, passwordText, category);
                     password.setService(service);
                     password.setLogin(login);
                     vector.push_back(password);
                 }
-                Wodczyt.close();
+                Wodczyt1.close();
                 break;
             }
-            case 2:
+            case 2: {
+                std::ifstream Wodczyt2;
+                std::string wiersz2;
+                std::string &standardPath = path;
+                standardPath = "../passwords.txt";
+                Wodczyt2.open(standardPath);
+                while (!Wodczyt2.eof()) {
+                    std::string a, name, c, passwordText, e, category, g, service, i, login;
+                    Wodczyt2 >> a >> name >> c >> passwordText >> e >> category >> g >> service >> i >> login;
+                    Password password(name, passwordText, category);
+                    password.setService(service);
+                    password.setLogin(login);
+                    vector.push_back(password);
+                }
+                Wodczyt2.close();
                 break;
+            }
             case 0:
                 break;
         }
@@ -181,6 +227,7 @@ void editPassword(std::vector<Password> &vector) {
             vector.at(choosePassword - 1).setLogin(newData);
             break;
     }
+    savePasswords(vector);
     std::cout << "Zmieniles dana w hasle" << std::endl;
 }
 
@@ -193,6 +240,7 @@ void deletePassword(std::vector<Password> &vector) {
     std::cin >> confirm;
     if(tolower(confirm)=='y'){
         vector.erase(vector.cbegin()+choosePassword-1);
+        savePasswords(vector);
         std::cout << "Usunales haslo" << std::endl;
     } else {
         std::cout << "Nie usunales hasla" << std::endl;
@@ -204,6 +252,7 @@ void addCategory(std::vector<std::string> &vector){
     std::cout << "Napisz nazwe kategorii, ktora chcesz dodac: " << std::endl;
     std::cin >> category;
     vector.push_back(category);
+    saveCategories(vector);
     std::cout << "Dodales kategorie." << std::endl;
 }
 
@@ -221,6 +270,7 @@ void deleteCategory(std::vector<Password> &pass, std::vector<std::string> &categ
             }
         }
         categ.erase(categ.cbegin()+chooseCategory-1);
+        saveCategories(categ);
         std::cout << "Usunales kategorie i hasla" << std::endl;
     } else {
         std::cout << "Nie usunales kategorii" << std::endl;
@@ -249,6 +299,8 @@ void addPassword(std::vector<Password> &pass, std::vector<std::string> &categ){
     } else if(login.empty()){
         password.setLogin("brak");
     }
+    pass.push_back(password);
+    savePasswords(pass);
     std::cout << "Haslo zostalo dodane" << std::endl;
 }
 
@@ -269,6 +321,7 @@ void sortPasswords(std::vector<Password> &vector){
         case 1:
         {
             sort(vector.begin(),vector.end(), sortName);
+            savePasswords(vector);
             writeOutPasswords(vector);
             //sortowanie wedlug nazwy
         }
@@ -276,6 +329,7 @@ void sortPasswords(std::vector<Password> &vector){
         case 2:
         {
             sort(vector.begin(),vector.end(), sortCategory);
+            savePasswords(vector);
             writeOutPasswords(vector);
             //sortowanie wedlug kategorii
         }
@@ -283,6 +337,7 @@ void sortPasswords(std::vector<Password> &vector){
         case 3:
         {
             sort(vector.begin(),vector.end(), sortNameAndCategory);
+            savePasswords(vector);
             writeOutPasswords(vector);
             //sortowanie wedlug nazwy i kategorii
         }
@@ -291,4 +346,18 @@ void sortPasswords(std::vector<Password> &vector){
         default:
             break;
     }
+}
+
+void savePasswords(std::vector<Password> &vector){
+    std::string str = "";
+    std::ofstream zapis(path);
+    for (Password password: vector) {
+        str += "Nazwa: " + password.getName() + "\n"
+                + "Haslo: " + password.getPasswordText() + "\n"
+                + "Kategoria: " + password.getCategory() + "\n"
+                + "StronaWWW/Serwis: " + password.getService() + "\n"
+                + "Login: " + password.getLogin() + "\n";
+    }
+    zapis<<str;
+    zapis.close();
 }
