@@ -114,6 +114,9 @@ void choosingFile(std::vector<Password> &vector) {
                 while (!Wodczyt2.eof()) {
                     std::string a, name, c, passwordText, e, category, g, service, i, login;
                     Wodczyt2 >> a >> name >> c >> passwordText >> e >> category >> g >> service >> i >> login;
+                    if(a.empty()){
+                        continue;
+                    }
                     Password password(name, passwordText, category);
                     password.setService(service);
                     password.setLogin(login);
@@ -279,26 +282,39 @@ void deleteCategory(std::vector<Password> &pass, std::vector<std::string> &categ
 
 void addPassword(std::vector<Password> &pass, std::vector<std::string> &categ){
     std::string name, passwordText, category, service, login;
+    char confirmService, confirmLogin;
+    int categoryId;
     std::cout << "Wybierz nazwe hasla, ktora chcesz dodac: " << std::endl;
     std::cin >> name;
     std::cout << "Napisz haslo, ktora chcesz dodac: " << std::endl;
     std::cin >> passwordText;
+
     writeOutCategories(categ);
-    std::cout << "Wybierz kategorie, ktora ma miec haslo: " << std::endl;
-    std::cin >> category;
-    std::cout << "Napisz serwis, do ktorego nalezy haslo: " << std::endl;
-    std::cin >> service;
-    std::cout << "Napisz login, ktory jest przypisany do hasla: " << std::endl;
-    std::cin >> login;
+    std::cout << "Wybierz kategorie(numer), ktora ma miec haslo: " << std::endl;
+    std::cin >> categoryId;
+    category = categ.at(categoryId-1);
     Password password(name, passwordText, category);
-    if(service.empty() && login.empty()){
+
+    std::cout << "Chcesz wpisac serwis do ktorego nalezy haslo? (y/n)";
+    std::cin >> confirmService;
+    if(tolower(confirmService)=='y'){
+        std::cout << "Wpisz: " << std::endl;
+        std::cin >> service;
+        password.setService(service);
+    } else {
         password.setService("brak");
-        password.setLogin("brak");
-    } else if(service.empty()){
-        password.setService("brak");
-    } else if(login.empty()){
+    }
+
+    std::cout << "Chcesz wpisac login do ktorego nalezy haslo? (y/n)";
+    std::cin >> confirmLogin;
+    if(tolower(confirmLogin)=='y'){
+        std::cout << "Wpisz: " << std::endl;
+        std::cin >> login;
+        password.setLogin(login);
+    } else {
         password.setLogin("brak");
     }
+
     pass.push_back(password);
     savePasswords(pass);
     std::cout << "Haslo zostalo dodane" << std::endl;
