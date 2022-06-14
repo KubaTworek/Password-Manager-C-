@@ -6,13 +6,15 @@
 
 std::string path;
 
-bool sortName (Password a,Password b) { return (a.getName()<b.getName()); }
-bool sortCategory (Password a,Password b) { return (a.getCategory()<b.getCategory()); }
-bool sortNameAndCategory (Password a,Password b) {
-    if(a.getName()<b.getName()){
-        return a.getName()<b.getName();
-    } else if(a.getName()==b.getName()){
-        return (a.getCategory()<b.getCategory());
+bool sortName(Password a, Password b) { return (a.getName() < b.getName()); }
+
+bool sortCategory(Password a, Password b) { return (a.getCategory() < b.getCategory()); }
+
+bool sortNameAndCategory(Password a, Password b) {
+    if (a.getName() < b.getName()) {
+        return a.getName() < b.getName();
+    } else if (a.getName() == b.getName()) {
+        return (a.getCategory() < b.getCategory());
     }
 }
 
@@ -48,23 +50,27 @@ void writeOutPasswords(std::vector<Password> &vector, std::string category);
 
 void writeOutPasswordsByName(std::vector<Password> &vector, std::string name);
 
+bool isPasswordRepeat(std::vector<Password> &vector, std::string password);
+
 void writeOutCategories(std::vector<std::string> &vector);
 
 void sortPasswords(std::vector<Password> &vector);
 
 void savePasswords(std::vector<Password> &vector);
 
+std::string autoGeneratePassword();
+
 int main() {
     std::vector<Password> passwords;
     std::vector<std::string> categories;
     odczytCategories(categories);
     choosingFile(passwords);
-    passwordManagement(passwords,categories);
+    passwordManagement(passwords, categories);
 
     return 0;
 }
 
-void odczytCategories(std::vector<std::string> &vector){
+void odczytCategories(std::vector<std::string> &vector) {
     std::ifstream Wodczyt;
     std::string wiersz;
     Wodczyt.open("../categories.txt");
@@ -76,27 +82,26 @@ void odczytCategories(std::vector<std::string> &vector){
     Wodczyt.close();
 }
 
-void saveCategories(std::vector<std::string> &vector){
+void saveCategories(std::vector<std::string> &vector) {
     std::string str = "";
     std::ofstream zapis("../categories.txt");
-    for (std::string category : vector) {
+    for (std::string category: vector) {
         str += "\n" + category;
     }
-    zapis<<str;
+    zapis << str;
     zapis.close();
 }
 
 void choosingFile(std::vector<Password> &vector) {
     while (true) {
+        std::cout << "Wybierz opcje." << std::endl;
+        std::cout << "1. Podaj sciezke do pliku." << std::endl;
+        std::cout << "2. Wybierz plik standardowy." << std::endl;
+        std::cout << "0. Zakoncz." << std::endl;
 
-    std::cout << "Wybierz opcje." << std::endl;
-    std::cout << "1. Podaj sciezke do pliku." << std::endl;
-    std::cout << "2. Wybierz plik standardowy." << std::endl;
-    std::cout << "0. Zakoncz." << std::endl;
+        int choose;
 
-    int choose;
-
-    std::cin >> choose;
+        std::cin >> choose;
 
         switch (choose) {
             case 1: {
@@ -121,14 +126,14 @@ void choosingFile(std::vector<Password> &vector) {
                 break;
             }
             case 2: {
-                while(true){
+                while (true) {
                     std::string enteringPassword;
                     std::cout << "Podaj haslo dostepu: " << std::endl;
                     std::cin >> enteringPassword;
 
-                    if(checkPassword(enteringPassword)){
+                    if (checkPassword(enteringPassword)) {
                         std::ofstream managementOdczyt;
-                        managementOdczyt.open("../management.txt", std::ios::out|std::ios::app);
+                        managementOdczyt.open("../management.txt", std::ios::out | std::ios::app);
                         managementOdczyt << "\n" + std::string(__TIME__) + " SUCCEED";
                         managementOdczyt.close();
                         std::ifstream Wodczyt2;
@@ -139,7 +144,7 @@ void choosingFile(std::vector<Password> &vector) {
                         while (!Wodczyt2.eof()) {
                             std::string a, name, c, passwordText, e, category, g, service, i, login;
                             Wodczyt2 >> a >> name >> c >> passwordText >> e >> category >> g >> service >> i >> login;
-                            if(a.empty()){
+                            if (a.empty()) {
                                 continue;
                             }
 
@@ -154,7 +159,7 @@ void choosingFile(std::vector<Password> &vector) {
                         break;
                     } else {
                         std::ofstream managementOdczyt;
-                        managementOdczyt.open("../management.txt", std::ios::out|std::ios::app);
+                        managementOdczyt.open("../management.txt", std::ios::out | std::ios::app);
                         managementOdczyt << "\n" + std::string(__TIME__) + " FAILED";
                         managementOdczyt.close();
                         std::cout << "Nieprawidlowe haslo." << std::endl;
@@ -163,39 +168,42 @@ void choosingFile(std::vector<Password> &vector) {
                 break;
             }
             case 0:
-                break;
+                exit(0);
+            default:
+                continue;
         }
         break;
     }
-
 }
 
 void passwordManagement(std::vector<Password> &pass, std::vector<std::string> &categ) {
     while (true) {
-    std::cout <<  std::endl;
-    std::cout << "Wybierz opcje." << std::endl;
-    std::cout << "1. Wyszukaj hasla." << std::endl;
-    std::cout << "2. Posortuj hasla." << std::endl;
-    std::cout << "3. Dodaj haslo." << std::endl;
-    std::cout << "4. Edytuj haslo." << std::endl;
-    std::cout << "5. Usun haslo." << std::endl;
-    std::cout << "6. Dodaj kategorie." << std::endl;
-    std::cout << "7. Usun kategorie." << std::endl;
-    std::cout << "0. Zakoncz." << std::endl;
+        std::cout << std::endl;
+        std::cout << "Wybierz opcje." << std::endl;
+        std::cout << "1. Wyszukaj hasla." << std::endl;
+        std::cout << "2. Posortuj hasla." << std::endl;
+        std::cout << "3. Dodaj haslo." << std::endl;
+        std::cout << "4. Edytuj haslo." << std::endl;
+        std::cout << "5. Usun haslo." << std::endl;
+        std::cout << "6. Dodaj kategorie." << std::endl;
+        std::cout << "7. Usun kategorie." << std::endl;
+        std::cout << "0. Zakoncz." << std::endl;
 
-    int choose;
-    std::cin >> choose;
+        int choose = 0;
+
+        std::cout << "Podaj numer" << std::endl;
+        std::cin >> choose;
 
 
         switch (choose) {
             case 1:
-                lookingForPasswords(pass,categ);
+                lookingForPasswords(pass, categ);
                 break;
             case 2:
                 sortPasswords(pass);
                 break;
             case 3:
-                addPassword(pass,categ);
+                addPassword(pass, categ);
                 break;
             case 4:
                 writeOutPasswords(pass);
@@ -211,29 +219,27 @@ void passwordManagement(std::vector<Password> &pass, std::vector<std::string> &c
                 break;
             case 7:
                 writeOutCategories(categ);
-                deleteCategory(pass,categ);
+                deleteCategory(pass, categ);
                 break;
             case 0:
                 exit(0);
-            default:
-                break;
         }
     }
 }
 
-void lookingForPasswords(std::vector<Password> &pass, std::vector<std::string> &categ){
+void lookingForPasswords(std::vector<Password> &pass, std::vector<std::string> &categ) {
     std::string name;
     int choose, categoryId;
     std::cout << "Chcesz wyszukac hasla wedlug?" << std::endl;
     std::cout << "1. Kategorii" << std::endl;
     std::cout << "2. Nazwy" << std::endl;
     std::cin >> choose;
-    if(choose == 1){
+    if (choose == 1) {
         writeOutCategories(categ);
         std::cout << "Podaj numer kategorii: ";
         std::cin >> categoryId;
-        writeOutPasswords(pass, categ.at(categoryId-1));
-    } else if(choose == 2){
+        writeOutPasswords(pass, categ.at(categoryId - 1));
+    } else if (choose == 2) {
         std::cout << "Podaj nazwe hasla: ";
         std::cin >> name;
         writeOutPasswordsByName(pass, name);
@@ -253,15 +259,15 @@ void writeOutPasswords(std::vector<Password> &vector) {
 void writeOutPasswords(std::vector<Password> &vector, std::string category) {
     int i = 1;
     for (Password password: vector) {
-        if(password.getCategory() == category){
+        if (password.getCategory() == category) {
             std::cout << i++ << ". " << password.getName() << std::endl;
         }
     }
 }
 
-void writeOutPasswordsByName(std::vector<Password> &vector, std::string name){
+void writeOutPasswordsByName(std::vector<Password> &vector, std::string name) {
     for (Password password: vector) {
-        if(password.getName() == name){
+        if (password.getName() == name) {
             std::cout << "Nazwa: " << password.getName() << std::endl;
             std::cout << "Haslo: " << password.getPasswordText() << std::endl;
             std::cout << "Kategoria: " << password.getCategory() << std::endl;
@@ -273,7 +279,7 @@ void writeOutPasswordsByName(std::vector<Password> &vector, std::string name){
 
 void writeOutCategories(std::vector<std::string> &vector) {
     int i = 1;
-    for (std::string category : vector) {
+    for (std::string category: vector) {
         std::cout << i++ << ". " << category << std::endl;
     }
 }
@@ -321,8 +327,8 @@ void deletePassword(std::vector<Password> &vector) {
     std::cin >> choosePassword;
     std::cout << "Na pewno chcesz to usunac? (y/n) " << std::endl;
     std::cin >> confirm;
-    if(tolower(confirm)=='y'){
-        vector.erase(vector.cbegin()+choosePassword-1);
+    if (tolower(confirm) == 'y') {
+        vector.erase(vector.cbegin() + choosePassword - 1);
         savePasswords(vector);
         std::cout << "Usunales haslo" << std::endl;
     } else {
@@ -330,7 +336,7 @@ void deletePassword(std::vector<Password> &vector) {
     }
 }
 
-void addCategory(std::vector<std::string> &vector){
+void addCategory(std::vector<std::string> &vector) {
     std::string category;
     std::cout << "Napisz nazwe kategorii, ktora chcesz dodac: " << std::endl;
     std::cin >> category;
@@ -344,15 +350,16 @@ void deleteCategory(std::vector<Password> &pass, std::vector<std::string> &categ
     char confirm;
     std::cout << "Wybierz numer kategorii, ktora chcesz usunac: " << std::endl;
     std::cin >> chooseCategory;
-    std::cout << "Wiaze sie to z usunieciem wszystkich hasel z tej kategorii. Na pewno chcesz to usunac? (y/n) " << std::endl;
+    std::cout << "Wiaze sie to z usunieciem wszystkich hasel z tej kategorii. Na pewno chcesz to usunac? (y/n) "
+              << std::endl;
     std::cin >> confirm;
-    if(tolower(confirm)=='y'){
-        for (Password password : pass) {
-            if(password.getCategory() == categ.at(chooseCategory-1)){
-                pass.erase(pass.cbegin()+(chooseCategory-1));
+    if (tolower(confirm) == 'y') {
+        for (Password password: pass) {
+            if (password.getCategory() == categ.at(chooseCategory - 1)) {
+                pass.erase(pass.cbegin() + (chooseCategory - 1));
             }
         }
-        categ.erase(categ.cbegin()+chooseCategory-1);
+        categ.erase(categ.cbegin() + chooseCategory - 1);
         saveCategories(categ);
         std::cout << "Usunales kategorie i hasla" << std::endl;
     } else {
@@ -360,24 +367,43 @@ void deleteCategory(std::vector<Password> &pass, std::vector<std::string> &categ
     }
 }
 
-void addPassword(std::vector<Password> &pass, std::vector<std::string> &categ){
+void addPassword(std::vector<Password> &pass, std::vector<std::string> &categ) {
     std::string name, passwordText, category, service, login;
-    char confirmService, confirmLogin;
+    char confirmService, confirmLogin, confirmAutoPassword;
     int categoryId;
     std::cout << "Wybierz nazwe hasla, ktora chcesz dodac: " << std::endl;
     std::cin >> name;
-    std::cout << "Napisz haslo, ktora chcesz dodac: " << std::endl;
-    std::cin >> passwordText;
+
+
+    std::cout << "Czy chcesz wygenerowac automatyczne haslo? (y/n)" << std::endl;
+    std::cin >> confirmAutoPassword;
+    if (tolower(confirmAutoPassword) == 'y') {
+        passwordText = autoGeneratePassword();
+    } else {
+        while (true) {
+            std::cout << "Napisz haslo, ktora chcesz dodac: " << std::endl;
+            std::cin >> passwordText;
+            if (!isPasswordRepeat(pass, passwordText)) {
+                if (passwordText.length() > 8) {
+                    break;
+                } else {
+                    std::cout << "Haslo jest za krotkie" << std::endl;
+                }
+            } else {
+                std::cout << "Haslo sie powtarza" << std::endl;
+            }
+        }
+    }
 
     writeOutCategories(categ);
     std::cout << "Wybierz kategorie(numer), ktora ma miec haslo: " << std::endl;
     std::cin >> categoryId;
-    category = categ.at(categoryId-1);
+    category = categ.at(categoryId - 1);
     Password password(name, passwordText, category);
 
     std::cout << "Chcesz wpisac serwis do ktorego nalezy haslo? (y/n)";
     std::cin >> confirmService;
-    if(tolower(confirmService)=='y'){
+    if (tolower(confirmService) == 'y') {
         std::cout << "Wpisz: " << std::endl;
         std::cin >> service;
         password.setService(service);
@@ -387,7 +413,7 @@ void addPassword(std::vector<Password> &pass, std::vector<std::string> &categ){
 
     std::cout << "Chcesz wpisac login do ktorego nalezy haslo? (y/n)";
     std::cin >> confirmLogin;
-    if(tolower(confirmLogin)=='y'){
+    if (tolower(confirmLogin) == 'y') {
         std::cout << "Wpisz: " << std::endl;
         std::cin >> login;
         password.setLogin(login);
@@ -400,9 +426,9 @@ void addPassword(std::vector<Password> &pass, std::vector<std::string> &categ){
     std::cout << "Haslo zostalo dodane" << std::endl;
 }
 
-void sortPasswords(std::vector<Password> &vector){
+void sortPasswords(std::vector<Password> &vector) {
 
-    std::cout <<  std::endl;
+    std::cout << std::endl;
     std::cout << "Wybierz opcje." << std::endl;
     std::cout << "1. Sortuj wedlug nazwy." << std::endl;
     std::cout << "2. Sortuj wedlug kategorii." << std::endl;
@@ -414,25 +440,22 @@ void sortPasswords(std::vector<Password> &vector){
 
 
     switch (choose) {
-        case 1:
-        {
-            sort(vector.begin(),vector.end(), sortName);
+        case 1: {
+            sort(vector.begin(), vector.end(), sortName);
             savePasswords(vector);
             writeOutPasswords(vector);
             //sortowanie wedlug nazwy
         }
             break;
-        case 2:
-        {
-            sort(vector.begin(),vector.end(), sortCategory);
+        case 2: {
+            sort(vector.begin(), vector.end(), sortCategory);
             savePasswords(vector);
             writeOutPasswords(vector);
             //sortowanie wedlug kategorii
         }
             break;
-        case 3:
-        {
-            sort(vector.begin(),vector.end(), sortNameAndCategory);
+        case 3: {
+            sort(vector.begin(), vector.end(), sortNameAndCategory);
             savePasswords(vector);
             writeOutPasswords(vector);
             //sortowanie wedlug nazwy i kategorii
@@ -444,46 +467,46 @@ void sortPasswords(std::vector<Password> &vector){
     }
 }
 
-void savePasswords(std::vector<Password> &vector){
+void savePasswords(std::vector<Password> &vector) {
     std::string str = "";
     std::ofstream zapis(path);
     for (Password password: vector) {
         str += "Nazwa: " + password.getName() + "\n"
-                + "Haslo: " + szyfrowanie(password.getPasswordText()) + "\n"
-                + "Kategoria: " + password.getCategory() + "\n"
-                + "StronaWWW/Serwis: " + password.getService() + "\n"
-                + "Login: " + password.getLogin() + "\n";
+               + "Haslo: " + szyfrowanie(password.getPasswordText()) + "\n"
+               + "Kategoria: " + password.getCategory() + "\n"
+               + "StronaWWW/Serwis: " + password.getService() + "\n"
+               + "Login: " + password.getLogin() + "\n";
     }
-    zapis<<str;
+    zapis << str;
     zapis.close();
 }
 
-std::string szyfrowanie(std::string oldPassword){
+std::string szyfrowanie(std::string oldPassword) {
     std::string newPassword = "";
-    for ( char znak : oldPassword ){
+    for (char znak: oldPassword) {
         znak += 5;
         newPassword += znak;
     }
     return newPassword;
 }
 
-std::string odszyfrowanie(std::string oldPassword){
+std::string odszyfrowanie(std::string oldPassword) {
     std::string newPassword = "";
-    for ( char znak : oldPassword ){
+    for (char znak: oldPassword) {
         znak -= 5;
         newPassword += znak;
     }
     return newPassword;
 }
 
-bool checkPassword(std::string password){
+bool checkPassword(std::string password) {
     std::ifstream managementOdczyt;
     managementOdczyt.open("../management.txt");
     while (!managementOdczyt.eof()) {
         std::string firstLine;
         managementOdczyt >> firstLine;
 
-        if(password == odszyfrowanie(firstLine)) {
+        if (password == odszyfrowanie(firstLine)) {
             managementOdczyt.close();
             return true;
         } else {
@@ -491,4 +514,94 @@ bool checkPassword(std::string password){
             return false;
         }
     }
+}
+
+bool isPasswordRepeat(std::vector<Password> &vector, std::string passwordText) {
+    for (Password password: vector) {
+        if (password.getPasswordText() == passwordText) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::string autoGeneratePassword() {
+    std::string tabs[] = {"qwertyuiopasdfghjklzxcvbnm", "1234567890", "!@#$%^&*", "QWERTYUIOPASDFGHJKLZXCVBNM"};
+
+    char confirmBigLetters, confirmSpecialSigns;
+    int amountOfSigns;
+    bool isBigLetters;
+    bool isSpecialSigns;
+    while (true) {
+        std::cout << "Jaka dlugosc hasla chcesz miec? " << std::endl;
+        std::cin >> amountOfSigns;
+        if (amountOfSigns < 8) {
+            std::cout << "Za krotkie haslo" << std::endl;
+        } else {
+            break;
+        }
+    }
+    std::cout << "Chcesz wielkie i male litery? (y/n)" << std::endl;
+    std::cin >> confirmBigLetters;
+    if (tolower(confirmBigLetters) == 'y') {
+        isBigLetters = true;
+    } else {
+        isBigLetters = false;
+    }
+    std::cout << "Chcesz znaki specjalne? (y/n)" << std::endl;
+    std::cin >> confirmSpecialSigns;
+    if (tolower(confirmSpecialSigns) == 'y') {
+        isSpecialSigns = true;
+    } else {
+        isSpecialSigns = false;
+    }
+
+    srand(time(NULL));
+    char password[amountOfSigns];
+    if (isBigLetters && isSpecialSigns) {
+        for (int i = 0; i < amountOfSigns; i++) {
+            int amountOfLetters;
+            int random = (int) (rand() % 4);
+            if (random == 3) amountOfLetters = 26;
+            if (random == 2) amountOfLetters = 9;
+            if (random == 1) amountOfLetters = 10;
+            if (random == 0) amountOfLetters = 26;
+
+            password[i] = tabs[random][(int) (rand() % amountOfLetters)];
+        }
+    } else if (isBigLetters) {
+        for (int i = 0; i < amountOfSigns; i++) {
+            int amountOfLetters;
+            int random = (int) (rand() % 3);
+            if (random == 2) amountOfLetters = 26;
+            if (random == 1) amountOfLetters = 10;
+            if (random == 0) amountOfLetters = 26;
+
+            if (random == 2) {
+                password[i] = tabs[random + 1][(int) (rand() % amountOfLetters)];
+            } else {
+                password[i] = tabs[random][(int) (rand() % amountOfLetters)];
+            }
+        }
+    } else if (isSpecialSigns) {
+        for (int i = 0; i < amountOfSigns; i++) {
+            int amountOfLetters;
+            int random = (int) (rand() % 3);
+            if (random == 2) amountOfLetters = 26;
+            if (random == 1) amountOfLetters = 10;
+            if (random == 0) amountOfLetters = 26;
+
+            password[i] = tabs[random][(int) (rand() % amountOfLetters)];
+        }
+    } else {
+        for (int i = 0; i < amountOfSigns; i++) {
+            int amountOfLetters;
+            int random = (int) rand() % 2;
+            if (random == 1) amountOfLetters = 10;
+            if (random == 0) amountOfLetters = 26;
+
+            password[i] = tabs[random][(int) (rand() % amountOfLetters)];
+        }
+    }
+    return std::string(password);
 }
