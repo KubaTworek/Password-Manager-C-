@@ -16,6 +16,14 @@ bool sortNameAndCategory (Password a,Password b) {
     }
 }
 
+void lookingForPasswords(std::vector<Password> &pass, std::vector<std::string> &categ);
+
+bool checkPassword(std::string password);
+
+std::string szyfrowanie(std::string oldPassword);
+
+std::string odszyfrowanie(std::string oldPassword);
+
 void odczytCategories(std::vector<std::string> &vector);
 
 void saveCategories(std::vector<std::string> &vector);
@@ -35,6 +43,10 @@ void deleteCategory(std::vector<Password> &pass, std::vector<std::string> &categ
 void addCategory(std::vector<std::string> &vector);
 
 void writeOutPasswords(std::vector<Password> &vector);
+
+void writeOutPasswords(std::vector<Password> &vector, std::string category);
+
+void writeOutPasswordsByName(std::vector<Password> &vector, std::string name);
 
 void writeOutCategories(std::vector<std::string> &vector);
 
@@ -97,7 +109,10 @@ void choosingFile(std::vector<Password> &vector) {
                 while (!Wodczyt1.eof()) {
                     std::string a, name, c, passwordText, e, category, g, service, i, login;
                     Wodczyt1 >> a >> name >> c >> passwordText >> e >> category >> g >> service >> i >> login;
-                    Password password(name, passwordText, category);
+
+                    std::string newPassword = odszyfrowanie(passwordText);
+
+                    Password password(name, newPassword, category);
                     password.setService(service);
                     password.setLogin(login);
                     vector.push_back(password);
@@ -106,23 +121,45 @@ void choosingFile(std::vector<Password> &vector) {
                 break;
             }
             case 2: {
-                std::ifstream Wodczyt2;
-                std::string wiersz2;
-                std::string &standardPath = path;
-                standardPath = "../passwords.txt";
-                Wodczyt2.open(standardPath);
-                while (!Wodczyt2.eof()) {
-                    std::string a, name, c, passwordText, e, category, g, service, i, login;
-                    Wodczyt2 >> a >> name >> c >> passwordText >> e >> category >> g >> service >> i >> login;
-                    if(a.empty()){
-                        continue;
+                while(true){
+                    std::string enteringPassword;
+                    std::cout << "Podaj haslo dostepu: " << std::endl;
+                    std::cin >> enteringPassword;
+
+                    if(checkPassword(enteringPassword)){
+                        std::ofstream managementOdczyt;
+                        managementOdczyt.open("../management.txt", std::ios::out|std::ios::app);
+                        managementOdczyt << "\n" + std::string(__TIME__) + " SUCCEED";
+                        managementOdczyt.close();
+                        std::ifstream Wodczyt2;
+                        std::string wiersz2;
+                        std::string &standardPath = path;
+                        standardPath = "../passwords.txt";
+                        Wodczyt2.open(standardPath);
+                        while (!Wodczyt2.eof()) {
+                            std::string a, name, c, passwordText, e, category, g, service, i, login;
+                            Wodczyt2 >> a >> name >> c >> passwordText >> e >> category >> g >> service >> i >> login;
+                            if(a.empty()){
+                                continue;
+                            }
+
+                            std::string newPassword = odszyfrowanie(passwordText);
+
+                            Password password(name, newPassword, category);
+                            password.setService(service);
+                            password.setLogin(login);
+                            vector.push_back(password);
+                        }
+                        Wodczyt2.close();
+                        break;
+                    } else {
+                        std::ofstream managementOdczyt;
+                        managementOdczyt.open("../management.txt", std::ios::out|std::ios::app);
+                        managementOdczyt << "\n" + std::string(__TIME__) + " FAILED";
+                        managementOdczyt.close();
+                        std::cout << "Nieprawidlowe haslo." << std::endl;
                     }
-                    Password password(name, passwordText, category);
-                    password.setService(service);
-                    password.setLogin(login);
-                    vector.push_back(password);
                 }
-                Wodczyt2.close();
                 break;
             }
             case 0:
@@ -152,7 +189,7 @@ void passwordManagement(std::vector<Password> &pass, std::vector<std::string> &c
 
         switch (choose) {
             case 1:
-                writeOutPasswords(pass);
+                lookingForPasswords(pass,categ);
                 break;
             case 2:
                 sortPasswords(pass);
@@ -184,10 +221,53 @@ void passwordManagement(std::vector<Password> &pass, std::vector<std::string> &c
     }
 }
 
+void lookingForPasswords(std::vector<Password> &pass, std::vector<std::string> &categ){
+    std::string name;
+    int choose, categoryId;
+    std::cout << "Chcesz wyszukac hasla wedlug?" << std::endl;
+    std::cout << "1. Kategorii" << std::endl;
+    std::cout << "2. Nazwy" << std::endl;
+    std::cin >> choose;
+    if(choose == 1){
+        writeOutCategories(categ);
+        std::cout << "Podaj numer kategorii: ";
+        std::cin >> categoryId;
+        writeOutPasswords(pass, categ.at(categoryId-1));
+    } else if(choose == 2){
+        std::cout << "Podaj nazwe hasla: ";
+        std::cin >> name;
+        writeOutPasswordsByName(pass, name);
+    } else {
+        std::cout << "Niepoprawny numer" << std::endl;
+    }
+
+}
+
 void writeOutPasswords(std::vector<Password> &vector) {
     int i = 1;
     for (Password password: vector) {
         std::cout << i++ << ". " << password.getName() << std::endl;
+    }
+}
+
+void writeOutPasswords(std::vector<Password> &vector, std::string category) {
+    int i = 1;
+    for (Password password: vector) {
+        if(password.getCategory() == category){
+            std::cout << i++ << ". " << password.getName() << std::endl;
+        }
+    }
+}
+
+void writeOutPasswordsByName(std::vector<Password> &vector, std::string name){
+    for (Password password: vector) {
+        if(password.getName() == name){
+            std::cout << "Nazwa: " << password.getName() << std::endl;
+            std::cout << "Haslo: " << password.getPasswordText() << std::endl;
+            std::cout << "Kategoria: " << password.getCategory() << std::endl;
+            std::cout << "StronaWWW/Serwis: " << password.getService() << std::endl;
+            std::cout << "Login: " << password.getLogin() << std::endl;
+        }
     }
 }
 
@@ -369,11 +449,46 @@ void savePasswords(std::vector<Password> &vector){
     std::ofstream zapis(path);
     for (Password password: vector) {
         str += "Nazwa: " + password.getName() + "\n"
-                + "Haslo: " + password.getPasswordText() + "\n"
+                + "Haslo: " + szyfrowanie(password.getPasswordText()) + "\n"
                 + "Kategoria: " + password.getCategory() + "\n"
                 + "StronaWWW/Serwis: " + password.getService() + "\n"
                 + "Login: " + password.getLogin() + "\n";
     }
     zapis<<str;
     zapis.close();
+}
+
+std::string szyfrowanie(std::string oldPassword){
+    std::string newPassword = "";
+    for ( char znak : oldPassword ){
+        znak += 5;
+        newPassword += znak;
+    }
+    return newPassword;
+}
+
+std::string odszyfrowanie(std::string oldPassword){
+    std::string newPassword = "";
+    for ( char znak : oldPassword ){
+        znak -= 5;
+        newPassword += znak;
+    }
+    return newPassword;
+}
+
+bool checkPassword(std::string password){
+    std::ifstream managementOdczyt;
+    managementOdczyt.open("../management.txt");
+    while (!managementOdczyt.eof()) {
+        std::string firstLine;
+        managementOdczyt >> firstLine;
+
+        if(password == odszyfrowanie(firstLine)) {
+            managementOdczyt.close();
+            return true;
+        } else {
+            managementOdczyt.close();
+            return false;
+        }
+    }
 }
