@@ -83,17 +83,21 @@ std::vector<Password> choosingFile() {
  */
 void readingFromFile(std::ifstream &read, std::vector<Password> &vector) {
     while (!read.eof()) {
-        std::string a, name, c, passwordText, e, category, g, service, i, login;
-        read >> a >> name >> c >> passwordText >> e >> category >> g >> service >> i >> login;
+        std::string a, name, passwordText, category, service, login;
+        read >> a >> name >> passwordText >> category >> service >> login;
         if (a.empty()) {
             continue;
         }
 
         std::string newPassword = PasswordManager::decryption(passwordText);
+        std::string newName = PasswordManager::decryption(name);
+        std::string newCategory = PasswordManager::decryption(category);
+        std::string newService = PasswordManager::decryption(service);
+        std::string newLogin = PasswordManager::decryption(login);
 
-        Password password(name, newPassword, category);
-        password.setService(service);
-        password.setLogin(login);
+        Password password(newName, newPassword, newCategory);
+        password.setService(newService);
+        password.setLogin(newLogin);
         vector.push_back(password);
     }
 }

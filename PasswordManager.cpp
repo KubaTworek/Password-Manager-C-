@@ -326,11 +326,11 @@ void PasswordManager::savePasswords(std::vector<Password> &vector) {
     std::string str;
     std::ofstream save("../passwords.txt");
     for (const Password &password: vector) {
-        str += "Nazwa: " + password.getName() + "\n"
-               + "Haslo: " + encryption(password.getPasswordText()) + "\n"
-               + "Kategoria: " + password.getCategory() + "\n"
-               + "StronaWWW/Serwis: " + password.getService() + "\n"
-               + "Login: " + password.getLogin() + "\n";
+        str += "pass " + encryption(password.getName()) + "\n"
+               + encryption(password.getPasswordText()) + "\n"
+               + encryption(password.getCategory()) + "\n"
+               + encryption(password.getService()) + "\n"
+               + encryption(password.getLogin()) + "\n";
     }
     save << str;
     save.close();
@@ -385,59 +385,57 @@ std::string PasswordManager::autoGeneratePassword() {
         isSpecialSigns = false;
     }
 
-    std::default_random_engine defEngine(time(nullptr));
+    std::random_device rd;
+    std::mt19937 gen(rd());
     char password[amountOfSigns];
+    int amountOfLetters;
     if (isBigLetters && isSpecialSigns) {
         for (int i = 0; i < amountOfSigns; i++) {
-            int amountOfLetters;
             std::uniform_int_distribution<int> intDistro(0, 3);
-            int random = intDistro(defEngine);
+            int random = intDistro(gen);
             if (random == 3) amountOfLetters = 26;
             if (random == 2) amountOfLetters = 9;
             if (random == 1) amountOfLetters = 10;
             if (random == 0) amountOfLetters = 26;
 
             std::uniform_int_distribution<int> sizeOfPassword(0, amountOfLetters);
-            password[i] = tabs[random][sizeOfPassword(defEngine)];
+            password[i] = tabs[random][sizeOfPassword(gen)];
         }
     } else if (isBigLetters) {
         for (int i = 0; i < amountOfSigns; i++) {
-            int amountOfLetters;
             std::uniform_int_distribution<int> intDistro(0, 2);
-            int random = intDistro(defEngine);
+            int random = intDistro(gen);
             if (random == 2) amountOfLetters = 26;
             if (random == 1) amountOfLetters = 10;
             if (random == 0) amountOfLetters = 26;
 
             std::uniform_int_distribution<int> sizeOfPassword(0, amountOfLetters);
             if (random == 2) {
-                password[i] = tabs[random + 1][sizeOfPassword(defEngine)];
+                password[i] = tabs[random + 1][sizeOfPassword(gen)];
             } else {
-                password[i] = tabs[random][sizeOfPassword(defEngine)];
+                password[i] = tabs[random][sizeOfPassword(gen)];
             }
         }
     } else if (isSpecialSigns) {
         for (int i = 0; i < amountOfSigns; i++) {
-            int amountOfLetters;
             std::uniform_int_distribution<int> intDistro(0, 2);
-            int random = intDistro(defEngine);
+            int random = intDistro(gen);
             if (random == 2) amountOfLetters = 26;
             if (random == 1) amountOfLetters = 10;
             if (random == 0) amountOfLetters = 26;
 
             std::uniform_int_distribution<int> sizeOfPassword(0, amountOfLetters);
-            password[i] = tabs[random][sizeOfPassword(defEngine)];
+            password[i] = tabs[random][sizeOfPassword(gen)];
         }
     } else {
         for (int i = 0; i < amountOfSigns; i++) {
-            int amountOfLetters;
             std::uniform_int_distribution<int> intDistro(0, 1);
-            int random = intDistro(defEngine);
+            int random = intDistro(gen);
             if (random == 1) amountOfLetters = 10;
             if (random == 0) amountOfLetters = 26;
 
             std::uniform_int_distribution<int> sizeOfPassword(0, amountOfLetters);
-            password[i] = tabs[random][sizeOfPassword(defEngine)];
+            password[i] = tabs[random][sizeOfPassword(gen)];
         }
     }
     return {password};
