@@ -61,6 +61,18 @@ build CMakeFiles/PasswordManager.dir/Password.cpp.obj: CXX_COMPILER__PasswordMan
   OBJECT_DIR = CMakeFiles\PasswordManager.dir
   OBJECT_FILE_DIR = CMakeFiles\PasswordManager.dir
 
+build CMakeFiles/PasswordManager.dir/PasswordManager.cpp.obj: CXX_COMPILER__PasswordManager_Debug C$:/Users/kubat/CLionProjects/PasswordManager/PasswordManager.cpp || cmake_object_order_depends_target_PasswordManager
+  DEP_FILE = CMakeFiles\PasswordManager.dir\PasswordManager.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\PasswordManager.dir
+  OBJECT_FILE_DIR = CMakeFiles\PasswordManager.dir
+
+build CMakeFiles/PasswordManager.dir/CategoryManager.cpp.obj: CXX_COMPILER__PasswordManager_Debug C$:/Users/kubat/CLionProjects/PasswordManager/CategoryManager.cpp || cmake_object_order_depends_target_PasswordManager
+  DEP_FILE = CMakeFiles\PasswordManager.dir\CategoryManager.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\PasswordManager.dir
+  OBJECT_FILE_DIR = CMakeFiles\PasswordManager.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target PasswordManager
@@ -69,7 +81,7 @@ build CMakeFiles/PasswordManager.dir/Password.cpp.obj: CXX_COMPILER__PasswordMan
 #############################################
 # Link the executable PasswordManager.exe
 
-build PasswordManager.exe: CXX_EXECUTABLE_LINKER__PasswordManager_Debug CMakeFiles/PasswordManager.dir/main.cpp.obj CMakeFiles/PasswordManager.dir/Password.cpp.obj
+build PasswordManager.exe: CXX_EXECUTABLE_LINKER__PasswordManager_Debug CMakeFiles/PasswordManager.dir/main.cpp.obj CMakeFiles/PasswordManager.dir/Password.cpp.obj CMakeFiles/PasswordManager.dir/PasswordManager.cpp.obj CMakeFiles/PasswordManager.dir/CategoryManager.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\PasswordManager.dir

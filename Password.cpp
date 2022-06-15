@@ -5,7 +5,9 @@
 #include "Password.h"
 
 
-Password::Password(std::string &name, std::string &passwordText, std::string &category) : name(name), passwordText(passwordText), category(category) {}
+Password::Password(std::string &name, std::string &passwordText, std::string &category) : name(name),
+                                                                                          passwordText(passwordText),
+                                                                                          category(category) {}
 
 
 const std::string &Password::getName() const {
