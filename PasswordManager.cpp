@@ -14,6 +14,11 @@ PasswordManager::PasswordManager(std::vector<Password> passwords) {
     passwordManagement(passwords, categoryManager);
 }
 
+/**a
+ * Starting management every option, main menu in application
+ * @param pass vectory of passwords
+ * @param categoryManager class of categoryManager which we will be working on
+ */
 void PasswordManager::passwordManagement(std::vector<Password> &pass, CategoryManager &categoryManager) {
     std::vector<std::string> categ = categoryManager.getCategories();
     while (true) {
@@ -67,6 +72,11 @@ void PasswordManager::passwordManagement(std::vector<Password> &pass, CategoryMa
     }
 }
 
+/**a
+ * Choosing which specify passwords, we would like to find
+ * @param pass vector of passwords
+ * @param categ vector of categories
+ */
 void PasswordManager::lookingForPasswords(std::vector<Password> &pass, std::vector<std::string> &categ) {
     std::string name;
     int choose, categoryId;
@@ -102,6 +112,10 @@ bool sortNameAndCategory(const Password &a, const Password &b) {
     }
 }
 
+/**a
+ * Sorting passwords
+ * @param vector vector of passwords
+ */
 void PasswordManager::sortPasswords(std::vector<Password> &vector) {
     std::cout << std::endl;
     std::cout << "Wybierz opcje." << std::endl;
@@ -118,21 +132,18 @@ void PasswordManager::sortPasswords(std::vector<Password> &vector) {
             sort(vector.begin(), vector.end(), sortName);
             savePasswords(vector);
             writeOutPasswords(vector);
-            //sortowanie wedlug nazwy
         }
             break;
         case 2: {
             sort(vector.begin(), vector.end(), sortCategory);
             savePasswords(vector);
             writeOutPasswords(vector);
-            //sortowanie wedlug kategorii
         }
             break;
         case 3: {
             sort(vector.begin(), vector.end(), sortNameAndCategory);
             savePasswords(vector);
             writeOutPasswords(vector);
-            //sortowanie wedlug nazwy i kategorii
         }
             break;
         case 0:
@@ -141,6 +152,11 @@ void PasswordManager::sortPasswords(std::vector<Password> &vector) {
     }
 }
 
+/**a
+ * Adding a new password
+ * @param pass vector of passwords
+ * @param categ vector of categories
+ */
 void PasswordManager::addPassword(std::vector<Password> &pass, std::vector<std::string> &categ) {
     std::string name, passwordText, category, service, login;
     char confirmService, confirmLogin, confirmAutoPassword;
@@ -199,6 +215,10 @@ void PasswordManager::addPassword(std::vector<Password> &pass, std::vector<std::
     std::cout << "Haslo zostalo dodane" << std::endl;
 }
 
+/**a
+ * Choosing a passwords to edit and next choose specific parameter to edit
+ * @param vector vector of passwords
+ */
 void PasswordManager::editPassword(std::vector<Password> &vector) {
     int choosePassword, chooseEdit;
     std::string newData;
@@ -236,6 +256,10 @@ void PasswordManager::editPassword(std::vector<Password> &vector) {
     std::cout << "Zmieniles dana w hasle" << std::endl;
 }
 
+/**a
+ * deleting specify password to delete
+ * @param vector vector of passwords
+ */
 void PasswordManager::deletePassword(std::vector<Password> &vector) {
     int choosePassword;
     char confirm;
@@ -252,6 +276,10 @@ void PasswordManager::deletePassword(std::vector<Password> &vector) {
     }
 }
 
+/**a
+ * Write out every password
+ * @param vector vector of passwords
+ */
 void PasswordManager::writeOutPasswords(std::vector<Password> &vector) {
     int i = 1;
     for (const Password &password: vector) {
@@ -259,6 +287,11 @@ void PasswordManager::writeOutPasswords(std::vector<Password> &vector) {
     }
 }
 
+/**a
+ * Write out passwords with specify category
+ * @param vector vector of passwords
+ * @param string specify name of category
+ */
 void PasswordManager::writeOutPasswords(std::vector<Password> &vector, const std::string &category) {
     int i = 1;
     for (const Password &password: vector) {
@@ -268,6 +301,11 @@ void PasswordManager::writeOutPasswords(std::vector<Password> &vector, const std
     }
 }
 
+/**a
+ * Write out passwords with specify name
+ * @param vector vector of passwords
+ * @param string specify name of password
+ */
 void PasswordManager::writeOutPasswordsByName(std::vector<Password> &vector, const std::string &name) {
     for (const Password &password: vector) {
         if (password.getName() == name) {
@@ -280,9 +318,13 @@ void PasswordManager::writeOutPasswordsByName(std::vector<Password> &vector, con
     }
 }
 
+/**a
+ * Save every password to file
+ * @param vector vector of passwords
+ */
 void PasswordManager::savePasswords(std::vector<Password> &vector) {
     std::string str;
-    std::ofstream zapis("../passwords.txt");
+    std::ofstream save("../passwords.txt");
     for (const Password &password: vector) {
         str += "Nazwa: " + password.getName() + "\n"
                + "Haslo: " + encryption(password.getPasswordText()) + "\n"
@@ -290,10 +332,16 @@ void PasswordManager::savePasswords(std::vector<Password> &vector) {
                + "StronaWWW/Serwis: " + password.getService() + "\n"
                + "Login: " + password.getLogin() + "\n";
     }
-    zapis << str;
-    zapis.close();
+    save << str;
+    save.close();
 }
 
+/**a
+ * Checking is password repeated with any other in file
+ * @param vector vector of passwords
+ * @param passwordText password choosen by user
+ * @return true is password repeated, false if it isn't
+ */
 bool PasswordManager::isPasswordRepeat(std::vector<Password> &vector, const std::string &passwordText) {
     if (std::any_of(vector.cbegin(), vector.cend(),
                     [passwordText](const Password &x) { return x.getPasswordText() == passwordText; })) {
@@ -302,6 +350,10 @@ bool PasswordManager::isPasswordRepeat(std::vector<Password> &vector, const std:
     return false;
 }
 
+/**a
+ * Auto generate password, asking for amount of letters and use specify signs
+ * @return auto generated passsword
+ */
 std::string PasswordManager::autoGeneratePassword() {
     std::string tabs[] = {"qwertyuiopasdfghjklzxcvbnm", "1234567890", "!@#$%^&*", "QWERTYUIOPASDFGHJKLZXCVBNM"};
 
@@ -391,22 +443,32 @@ std::string PasswordManager::autoGeneratePassword() {
     return {password};
 }
 
+/**a
+ * Checking is password of access to the file is right
+ * @param password password passed by user
+ * @return true if password is true, false if it is false
+ */
 bool PasswordManager::checkPassword(const std::string &password) {
-    std::ifstream managementOdczyt;
-    managementOdczyt.open("../management.txt");
-    while (!managementOdczyt.eof()) {
+    std::ifstream managementRead;
+    managementRead.open("../management.txt");
+    while (!managementRead.eof()) {
         std::string firstLine;
-        managementOdczyt >> firstLine;
+        managementRead >> firstLine;
 
         if (password == decryption(firstLine)) {
-            managementOdczyt.close();
+            managementRead.close();
             return true;
         }
-        managementOdczyt.close();
+        managementRead.close();
     }
     return false;
 }
 
+/**a
+ * Function encrypting password passed by user
+ * @param oldPassword password passed
+ * @return encrypted password passed to file
+ */
 std::string PasswordManager::encryption(const std::string &oldPassword) {
     std::string newPassword;
     for (char sign: oldPassword) {
@@ -416,6 +478,11 @@ std::string PasswordManager::encryption(const std::string &oldPassword) {
     return newPassword;
 }
 
+/**a
+ * Function decrypting password get from file
+ * @param oldPassword password get from file
+ * @return encrypted password passed to user
+ */
 std::string PasswordManager::decryption(const std::string &oldPassword) {
     std::string newPassword;
     for (char sign: oldPassword) {

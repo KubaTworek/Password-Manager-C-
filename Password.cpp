@@ -8,7 +8,7 @@
 Password::Password(std::string &name, std::string &passwordText, std::string &category) : name(name),
                                                                                           passwordText(passwordText),
                                                                                           category(category) {}
-
+// GETTERS
 
 const std::string &Password::getName() const {
     return name;
@@ -29,6 +29,8 @@ const std::string &Password::getService() const {
 const std::string &Password::getLogin() const {
     return login;
 }
+
+// SETTERS
 
 void Password::setName(const std::string &name) {
     Password::name = name;
